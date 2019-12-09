@@ -9,8 +9,8 @@
 #include "Poison.h"
 #include <time.h>
 
-int fieldHeight = 80;
-int fieldWidth = 80;
+int fieldHeight = 150;
+int fieldWidth = 150;
 int poisonSpawnGeneration = -1;
 int poisonCount = 20;
 int maleCount = 10;
@@ -109,7 +109,7 @@ void SpawnVoles(int count, std::vector<std::vector<std::unique_ptr<Cell>>>* fiel
 			{
 				*cell = std::make_unique<FemaleVole>(1, i, j);
 				auto female = dynamic_cast<FemaleVole*>((*field)[i][j].get());
-				if ((rand() % 100) < 50)
+				if ((rand() % 100) < 40)
 				{
 					female->birthGeneration = rand() % female->PregnantTime;
 					female->isPregnant = true;
