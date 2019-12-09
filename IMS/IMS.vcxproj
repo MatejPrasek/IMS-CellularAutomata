@@ -152,7 +152,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Blank.cpp" />
-    <ClCompile Include="CellTypes.cpp" />
     <ClCompile Include="FemaleVole.cpp" />
     <ClCompile Include="IMS.cpp" />
     <ClCompile Include="MaleVole.cpp" />
