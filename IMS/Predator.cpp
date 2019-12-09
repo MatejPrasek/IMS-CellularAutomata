@@ -103,7 +103,7 @@ void Predator::GetDirection(std::vector<std::vector<std::unique_ptr<Cell>>>* fie
 	// vole found
 	if (closestHeight < maxHeight || closestWidth < maxWidth)
 	{
-		if (std::abs(closestHeight) <= 2 || std::abs(closestWidth) <= 2)
+		if (std::abs(closestHeight) <= 2 && std::abs(closestWidth) <= 2)
 		{
 			if ((rand() % 100) < sucessChance)
 			{
