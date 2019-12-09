@@ -87,14 +87,18 @@ void Predator::GetDirection(std::vector<std::vector<std::unique_ptr<Cell>>>* fie
 	{
 		for (auto i = -5; i <= 5; ++i)
 		{
-			const auto height = i < 0 ? std::max(nextGenerationHeight + i, 0) : std::min(nextGenerationHeight + i, maxHeight);
+			const auto height = nextGenerationHeight + i;
+			if(height < 0 || height > maxHeight)
+				continue;
 			for (auto j = -5; j <= 5; ++j)
 			{
-				const auto width = j < 0 ? std::max(nextGenerationWidth + j, 0) : std::min(nextGenerationWidth + j, maxWidth);
-				std::unique_ptr<Cell>* unique_ptr = &(*field)[height][width];
-				if (unique_ptr == nullptr)
+				const auto width = nextGenerationWidth + j;
+				if(width < 0 || width > maxWidth)
 					continue;
-				const auto type = unique_ptr->get()->WhatAmI();
+				std::unique_ptr<Cell>* cell = &(*field)[height][width];
+				if(*cell == nullptr)
+					continue;
+				const auto type = (*field)[height][width]->WhatAmI();
 				if (type == CellTypes::MaleVole || type == CellTypes::FemaleVole)
 				{
 					if (std::abs(closestHeight) > std::abs(i) && std::abs(closestWidth) > std::abs(j))
