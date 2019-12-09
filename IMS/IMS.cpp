@@ -148,7 +148,7 @@ int main()
 	SpawnVoles(femaleCount, &field, false);
 	SpawnPredators(predatorCount, &field);
 
-	for (int generation = 1; generation < 2400; ++generation)
+	for (int generation = 1; generation < 24 * 93; ++generation)
 	{
 		if (generation == poisonSpawnGeneration)
 			SpawnPoison(poisonCount, &field);
