@@ -282,7 +282,7 @@ int main()
 
 	for (int generation = 1; generation < 24 * numberOfSimulatedDays; ++generation)
 	{
-		if (generation == poisonSpawnGeneration)
+		if (generation == poisonSpawnGeneration * 24)
 			SpawnPoison(poisonCount, &field);
 		Calculate(fieldHeight, fieldWidth, &field, generation);
 		Move(fieldHeight, fieldWidth, &field, &tmpField);
