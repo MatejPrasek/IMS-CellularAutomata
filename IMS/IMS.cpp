@@ -12,11 +12,12 @@
 int fieldHeight = 150;
 int fieldWidth = 150;
 int poisonSpawnGeneration = -1;
-int poisonCount = 20;
-int maleCount = 10;
-int femaleCount = 13;
-int predatorCount = 1;
-int predatorSuccessRate = 42;
+int poisonCount = -1;
+int maleCount = -1;
+int femaleCount = -1;
+int predatorCount = -1;
+int predatorSuccessRate = -1;
+int numberOfSimulatedDays = -1;
 
 void CreateNewGeneration(int fieldWidth, int fieldHeight, std::vector<std::vector<std::unique_ptr<Cell>>>* field, std::vector<std::vector<std::unique_ptr<Cell>>>* tmpField)
 {
@@ -100,6 +101,8 @@ void SpawnVoles(int count, std::vector<std::vector<std::unique_ptr<Cell>>>* fiel
 		std::unique_ptr<Cell>* cell = &(*field)[i][j];
 		if (cell->get()->WhatAmI() == CellTypes::Blank)
 		{
+			auto pregnant = false;
+
 			if (male)
 			{
 
@@ -109,10 +112,26 @@ void SpawnVoles(int count, std::vector<std::vector<std::unique_ptr<Cell>>>* fiel
 			{
 				*cell = std::make_unique<FemaleVole>(1, i, j);
 				auto female = dynamic_cast<FemaleVole*>((*field)[i][j].get());
-				if ((rand() % 100) < 40)
+				pregnant = (rand() % 100) < 50;
+				if (pregnant)
 				{
 					female->birthGeneration = rand() % female->PregnantTime;
 					female->isPregnant = true;
+				}
+			}
+
+			if ((male || !pregnant) && (rand() % 100) < 20)
+			{
+
+				auto vole = dynamic_cast<Vole*>((*field)[i][j].get());
+				vole->isAdult = false;
+				if (male)
+				{
+					vole->adultGeneration = rand() % MaleVole::ChildTime;
+				}
+				else
+				{
+					vole->adultGeneration = rand() % FemaleVole::ChildTime;
 				}
 			}
 			count--;
@@ -136,8 +155,121 @@ void SpawnPredators(int count, std::vector<std::vector<std::unique_ptr<Cell>>>* 
 	}
 }
 
+void GetSettings(bool useDefaults)
+{
+	if (useDefaults)
+	{
+		fieldHeight = 150;
+		fieldWidth = 150;
+		poisonSpawnGeneration = -1;
+		poisonCount = 20;
+		maleCount = 10;
+		femaleCount = 13;
+		predatorCount = 1;
+		predatorSuccessRate = 73;
+		numberOfSimulatedDays = 93;
+		return;
+	}
+	std::cout << "Enter number of male voles:" << std::endl;
+	std::cin >> maleCount;
+	if (maleCount < 0)
+	{
+		std::cerr << "Incorrect value entered.";
+		exit(EXIT_FAILURE);
+	}
+
+	std::cout << "Enter number of female voles:" << std::endl;
+	std::cin >> femaleCount;
+	if (femaleCount < 0)
+	{
+		std::cerr << "Incorrect value entered.";
+		exit(EXIT_FAILURE);
+	}
+
+	std::cout << "Enter how many poison baits will be set (0 for no baits):" << std::endl;
+	std::cin >> poisonCount;
+	if (poisonCount < 0)
+	{
+		std::cerr << "Incorrect value entered.";
+		exit(EXIT_FAILURE);
+	}
+
+	if (poisonCount > 0)
+	{
+		std::cout << "Enter when (days from the start of the simulation) the poison baits will be set (1 for immediate):" << std::endl;
+		std::cin >> poisonSpawnGeneration;
+		if (poisonSpawnGeneration < 1)
+		{
+			std::cerr << "Incorrect value entered.";
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	std::cout << "Enter number of predators:" << std::endl;
+	std::cin >> predatorCount;
+	if (predatorCount < 0)
+	{
+		std::cerr << "Incorrect value entered.";
+		exit(EXIT_FAILURE);
+	}
+
+	if (predatorCount > 0)
+	{
+		int habitat = -1;
+		std::cout << "Enter simulated habitat of common vole:" << std::endl;
+		std::cout << "1) Plowed fields, light stubble, newly planted crops" << std::endl;
+		std::cout << "2) Disturbed grassland and fields" << std::endl;
+		std::cout << "3) Heavy, tall stubble field" << std::endl;
+		std::cout << "4) Idle, undisturbed pastures and meadow" << std::endl;
+		std::cout << "5) Crops (corn, wheat, beans,milo, oats)" << std::endl;
+		std::cout << "6) Old fields, overgrown pastures and meadow" << std::endl;
+		std::cout << "7) Woodlots" << std::endl;
+		std::cin >> habitat;
+
+		switch (habitat)
+		{
+		case 1:
+			predatorSuccessRate = 74;
+			break;
+
+		case 2:
+			predatorSuccessRate = 83;
+			break;
+
+		case 3:
+			predatorSuccessRate = 65;
+			break;
+		case 4:
+			predatorSuccessRate = 53;
+			break;
+		case 5:
+			predatorSuccessRate = 42;
+			break;
+		case 6:
+			predatorSuccessRate = 33;
+			break;
+		case 7:
+			predatorSuccessRate = 33;
+			break;
+		default:
+			std::cerr << "Incorrect value entered.";
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	std::cout << "Enter number of simulated days:" << std::endl;
+	std::cin >> numberOfSimulatedDays;
+	if (numberOfSimulatedDays < 1)
+	{
+		std::cerr << "Incorrect value entered.";
+		exit(EXIT_FAILURE);
+	}
+
+}
+
 int main()
 {
+	GetSettings(false);
 	srand(time(NULL));
 
 	std::vector<std::vector<std::unique_ptr<Cell>>> field(fieldHeight);
@@ -148,7 +280,7 @@ int main()
 	SpawnVoles(femaleCount, &field, false);
 	SpawnPredators(predatorCount, &field);
 
-	for (int generation = 1; generation < 24 * 93; ++generation)
+	for (int generation = 1; generation < 24 * numberOfSimulatedDays; ++generation)
 	{
 		if (generation == poisonSpawnGeneration)
 			SpawnPoison(poisonCount, &field);

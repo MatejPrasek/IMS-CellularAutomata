@@ -14,7 +14,7 @@ private:
 	std::unique_ptr<Cell>* GetCellToPlace(std::vector<std::vector<std::unique_ptr<Cell>>>* field, Cell* collider);
 	unsigned int fedUntilGeneration;
 	int sucessChance;
-	const int fedDuration = 3;
+	const int fedDuration = 4;
 	const int failedHuntRestorationDuration = 1;
 };
 
