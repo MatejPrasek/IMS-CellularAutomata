@@ -36,9 +36,6 @@
     <ClCompile Include="Blank.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CellTypes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vole.h">
