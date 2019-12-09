@@ -11,6 +11,6 @@ public:
 	std::unique_ptr<Cell>* FindFarForReproduction(std::vector<std::vector<std::unique_ptr<Cell>>>* field);
 	std::unique_ptr<Cell>* FindForReproduction(std::vector<std::vector<std::unique_ptr<Cell>>>* field, int distance);
 
-	static const int ChildTime = 56 * 24;
+	static const int ChildTime = 42 * 24;
 };
 

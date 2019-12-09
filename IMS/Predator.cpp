@@ -2,11 +2,12 @@
 #include "Vole.h"
 #include <algorithm>
 
-Predator::Predator(int height, int width)
+Predator::Predator(int height, int width, int successChance)
 {
 	fedUntilGeneration = 0;
 	nextGenerationHeight = height;
 	nextGenerationWidth = width;
+	sucessChance = successChance;
 }
 
 void Predator::NextGeneration(std::vector<std::vector<std::unique_ptr<Cell>>>* field, unsigned generation, int height, int width)
@@ -28,18 +29,18 @@ void Predator::ResolveCollision(std::unique_ptr<Cell>* colliderPtr, std::vector<
 	switch (collider->WhatAmI())
 	{
 		// Copy it on neighbor cell
-		case CellTypes::Predator:
-			target = GetCellToPlace(field, collider);
-			if (target != nullptr)
-				target->get()->ResolveCollision(colliderPtr, field);
-			break;
+	case CellTypes::Predator:
+		target = GetCellToPlace(field, collider);
+		if (target != nullptr)
+			target->get()->ResolveCollision(colliderPtr, field);
+		break;
 		// Do not copy 
-		case CellTypes::Blank:
-		case CellTypes::MaleVole:
-		case CellTypes::FemaleVole:
-		case CellTypes::Poison:
-		default:
-			break;
+	case CellTypes::Blank:
+	case CellTypes::MaleVole:
+	case CellTypes::FemaleVole:
+	case CellTypes::Poison:
+	default:
+		break;
 	}
 }
 
@@ -55,15 +56,15 @@ std::unique_ptr<Cell>* Predator::GetCellToPlace(std::vector<std::vector<std::uni
 		{
 			const auto width = j < 0 ? std::max(collider->nextGenerationWidth + j, 0) : std::min(collider->nextGenerationWidth + j, maxWidth);
 			const auto type = (*field)[height][width]->WhatAmI();
-			if(type == CellTypes::Blank)
+			if (type == CellTypes::Blank)
 			{
 				return &(*field)[height][width];
 			}
-			else if(type == CellTypes::MaleVole || type == CellTypes::FemaleVole)
+			else if (type == CellTypes::MaleVole || type == CellTypes::FemaleVole)
 			{
 				toReturn = &(*field)[height][width];
 			}
-			else if(toReturn == nullptr && type == CellTypes::Poison)
+			else if (toReturn == nullptr && type == CellTypes::Poison)
 			{
 				toReturn = &(*field)[height][width];
 			}
@@ -79,7 +80,7 @@ void Predator::GetDirection(std::vector<std::vector<std::unique_ptr<Cell>>>* fie
 	auto closestHeight = maxHeight;
 	auto closestWidth = maxWidth;
 
-	if (fedUntilGeneration <= generation) 
+	if (fedUntilGeneration <= generation)
 	{
 		for (auto i = -5; i <= 5; ++i)
 		{
@@ -100,12 +101,19 @@ void Predator::GetDirection(std::vector<std::vector<std::unique_ptr<Cell>>>* fie
 		}
 	}
 	// vole found
-	if(closestHeight < maxHeight || closestWidth < maxWidth)
+	if (closestHeight < maxHeight || closestWidth < maxWidth)
 	{
-		if(std::abs(closestHeight) <= 2 || std::abs(closestWidth) <= 2)
+		if (std::abs(closestHeight) <= 2 || std::abs(closestWidth) <= 2)
 		{
-			dynamic_cast<Vole*>((*field)[nextGenerationHeight + closestHeight][nextGenerationWidth + closestWidth].get())->WillDie = true;
-			fedUntilGeneration = generation + fedDuration;
+			if ((rand() % 100) < sucessChance)
+			{
+				dynamic_cast<Vole*>((*field)[nextGenerationHeight + closestHeight][nextGenerationWidth + closestWidth].get())->WillDie = true;
+				fedUntilGeneration = generation + fedDuration;
+			}
+			else
+			{
+				fedUntilGeneration = generation + failedHuntRestorationDuration;
+			}
 		}
 		else
 		{
@@ -128,5 +136,5 @@ void Predator::GetDirection(std::vector<std::vector<std::unique_ptr<Cell>>>* fie
 	nextGenerationHeight += closestHeight;
 	nextGenerationWidth += closestWidth;
 	nextGenerationHeight = std::min(std::max(nextGenerationHeight, 0), maxHeight);
-	nextGenerationWidth =  std::min(std::max(nextGenerationWidth, 0), maxWidth);
+	nextGenerationWidth = std::min(std::max(nextGenerationWidth, 0), maxWidth);
 }

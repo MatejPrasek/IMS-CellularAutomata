@@ -15,8 +15,9 @@ public:
 
 	static const int ChildTime = 15 * 24;
 	static const int PregnantTime = 21 * 24;
-private:
 	unsigned int birthGeneration;
+
+private:
 	bool givingBirth;
 };
 
