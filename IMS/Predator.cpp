@@ -55,7 +55,10 @@ std::unique_ptr<Cell>* Predator::GetCellToPlace(std::vector<std::vector<std::uni
 		for (auto j = -1; j <= 1; ++j)
 		{
 			const auto width = j < 0 ? std::max(collider->nextGenerationWidth + j, 0) : std::min(collider->nextGenerationWidth + j, maxWidth);
-			const auto type = (*field)[height][width]->WhatAmI();
+			std::unique_ptr<Cell>* unique_ptr = &(*field)[height][width];
+			if (*unique_ptr == nullptr)
+				continue;
+			const auto type = unique_ptr->get()->WhatAmI();
 			if (type == CellTypes::Blank)
 			{
 				return &(*field)[height][width];
@@ -88,7 +91,10 @@ void Predator::GetDirection(std::vector<std::vector<std::unique_ptr<Cell>>>* fie
 			for (auto j = -5; j <= 5; ++j)
 			{
 				const auto width = j < 0 ? std::max(nextGenerationWidth + j, 0) : std::min(nextGenerationWidth + j, maxWidth);
-				const auto type = (*field)[height][width]->WhatAmI();
+				std::unique_ptr<Cell>* unique_ptr = &(*field)[height][width];
+				if (unique_ptr == nullptr)
+					continue;
+				const auto type = unique_ptr->get()->WhatAmI();
 				if (type == CellTypes::MaleVole || type == CellTypes::FemaleVole)
 				{
 					if (std::abs(closestHeight) > std::abs(i) && std::abs(closestWidth) > std::abs(j))
